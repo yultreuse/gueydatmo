@@ -9,11 +9,7 @@ import os, os.path
 class token:
     '''Handles Netatmo API token'''
     
-    # hardcoded credentials
-    client_id = "54ae5efd1c775977ffcc5697"
-    client_secret = "sQNIHM5zlCRgEmN8xT7P5SIp4EKs4Zk7nIMkAsXoG9"
-    username = "mottin@gueydan.eu"
-    password = "mdpnetatmo"
+    cred = eval(open("credentials.txt").read())
     
     # url
     NetatmoAuthUrl = "http://api.netatmo.net/oauth2/token"
@@ -39,10 +35,10 @@ class token:
     def __requestToken(self):
         now = datetime.now() 
         credentials = {}
-        credentials["client_id"] = token.client_id
-        credentials["client_secret"] = token.client_secret
-        credentials["username"] = token.username
-        credentials["password"] = token.password
+        credentials["client_id"] = token.cred['client_id']
+        credentials["client_secret"] = token.cred['client_secret']
+        credentials["username"] = token.cred['username']
+        credentials["password"] = token.cred['password']
         credentials["scope"] = "read_thermostat"
         credentials["grant_type"] = "password"
 
@@ -55,8 +51,8 @@ class token:
     def __refreshToken(self):
         now = datetime.now() 
         credentials = {}
-        credentials["client_id"] = token.client_id
-        credentials["client_secret"] = token.client_secret
+        credentials["client_id"] = token.cred['client_id']
+        credentials["client_secret"] = token.cred['client_secret']
         credentials["grant_type"] = "refresh_token"
         credentials["refresh_token"] = self.__tok["refresh_token"]
 
@@ -69,16 +65,18 @@ class token:
 class GueydAtmo(object):
     @cherrypy.expose
     def index(self):
-        return """<html>
+        tok = token()
+        str =  """<html>
           <head></head>
           <body>
             <img src="/static/logo.jpg" alt="logo" width="50">
             <form method="post" action="random">
               <input type="text" value="8" name="length" />
               <button type="submit">Give it now!</button>
-            </form>
+            </form><p>""" + tok.getToken() + """</p>            
           </body>
         </html>"""
+        return str
     
     @cherrypy.expose
     def random(self,length="8"):
