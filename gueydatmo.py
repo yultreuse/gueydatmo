@@ -2,8 +2,6 @@ import requests
 import cherrypy
 from datetime import datetime,timedelta
 
-import random
-import string
 import os, os.path
 
 class token:
@@ -62,39 +60,33 @@ class token:
         self.__tok["deadline"] = deadline
 
 class GueydAtmo(object):
-    @cherrypy.expose
-    def index(self):
-        return file('web/index.html')
-
-class GueydAtmoWebService(object):
-    
+        
     def __init__(self):
         self.__tok = token()
-        
-    exposed = True
     
-    @cherrypy.tools.accept(media='text/plain')
-    def GET(self):
-        return cherrypy.session['mystring']
-
-    def POST(self, cmd):
+    @cherrypy.expose
+    def index(self):
         token.cred = cherrypy.request.app.config['credentials']
+        return file('web/index.html')
+    
+    @cherrypy.expose
+    def devicelist(self):
+        qryparams = {}
+        qryparams["access_token"] = self.__tok.getToken()
+        qryparams["app_type"] = "app_thermostat"
+        ans = requests.post("http://api.netatmo.net/api/devicelist",data=qryparams)
+        return ans.text 
+    
+    @cherrypy.expose
+    def gaws(self,cmd):
         if cmd == "gettemp":
             qryparams = {}
             qryparams["access_token"] = self.__tok.getToken()
             qryparams["app_type"] = "app_thermostat"
             ans = requests.post("http://api.netatmo.net/api/devicelist",data=qryparams)
-            return ans.text
-            
-
-    def PUT(self, another_string):
-        cherrypy.session['mystring'] = another_string
-
-    def DELETE(self):
-        cherrypy.session.pop('mystring', None)
+            return ans.text           
 
 if __name__ == '__main__':
 
     gueydAtmoApp = GueydAtmo()
-    gueydAtmoApp.gaws = GueydAtmoWebService()
     cherrypy.quickstart(gueydAtmoApp,'/',"gueydatmo.conf")

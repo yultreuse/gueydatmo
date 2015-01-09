@@ -1,12 +1,7 @@
 [/]
 tools.sessions.on = True
 tools.staticdir.root = os.path.abspath(os.getcwd())
-
-[credentials]
-client_id = "YOUR ID"
-client_secret = "YOUR SECRET"
-username = "YOUR USER"
-password = "YOUR PASS"
+tools.staticfile.root = os.path.abspath(os.getcwd())
 
 [/static]
 tools.staticdir.on = True
@@ -16,3 +11,13 @@ tools.staticdir.dir = "web"
 request.dispatch = cherrypy.dispatch.MethodDispatcher()
 tools.response_headers.on = True
 tools.response_headers.headers = [('Content-Type', 'text/plain')]
+
+[/favicon.ico]
+tools.staticfile.on = True
+tools.staticfile.filename = 'web/img/favicon.ico'
+
+[credentials]
+client_id = "YOUR ID"
+client_secret = "YOUR SECRET"
+username = "YOUR USER"
+password = "YOUR PASS"
