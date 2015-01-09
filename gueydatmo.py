@@ -7,9 +7,8 @@ import string
 import os, os.path
 
 class token:
-    '''Handles Netatmo API token'''
-    
-    cred = eval(open("credentials.txt").read())
+    '''Handles Netatmo API token'''    
+    cred = {}
     
     # url
     NetatmoAuthUrl = "http://api.netatmo.net/oauth2/token"
@@ -65,38 +64,37 @@ class token:
 class GueydAtmo(object):
     @cherrypy.expose
     def index(self):
-        tok = token()
-        str =  """<html>
-          <head></head>
-          <body>
-            <img src="/static/logo.jpg" alt="logo" width="50">
-            <form method="post" action="random">
-              <input type="text" value="8" name="length" />
-              <button type="submit">Give it now!</button>
-            </form><p>""" + tok.getToken() + """</p>            
-          </body>
-        </html>"""
-        return str
+        return file('web/index.html')
+
+class GueydAtmoWebService(object):
     
-    @cherrypy.expose
-    def random(self,length="8"):
-        some_string =  ''.join(random.sample(string.hexdigits,int(length)))
-        cherrypy.session['mystring'] = some_string
-        return some_string
+    def __init__(self):
+        self.__tok = token()
+        
+    exposed = True
     
-    @cherrypy.expose
-    def display(self):
+    @cherrypy.tools.accept(media='text/plain')
+    def GET(self):
         return cherrypy.session['mystring']
 
-if __name__ == '__main__':
-    root = {}
-    root['tools.sessions.on'] = True
-    root['tools.staticdir.root'] = os.path.abspath(os.getcwd())
-    static = {}
-    static['tools.staticdir.on'] = True
-    static['tools.staticdir.dir'] = './web'
-    conf = {}
-    conf['/'] = root
-    conf['/static'] = static
+    def POST(self, cmd):
+        token.cred = cherrypy.request.app.config['credentials']
+        if cmd == "gettemp":
+            qryparams = {}
+            qryparams["access_token"] = self.__tok.getToken()
+            qryparams["app_type"] = "app_thermostat"
+            ans = requests.post("http://api.netatmo.net/api/devicelist",data=qryparams)
+            return ans.text
+            
 
-    cherrypy.quickstart(GueydAtmo(),'/',conf)
+    def PUT(self, another_string):
+        cherrypy.session['mystring'] = another_string
+
+    def DELETE(self):
+        cherrypy.session.pop('mystring', None)
+
+if __name__ == '__main__':
+
+    gueydAtmoApp = GueydAtmo()
+    gueydAtmoApp.gaws = GueydAtmoWebService()
+    cherrypy.quickstart(gueydAtmoApp,'/',"gueydatmo.conf")

@@ -1,0 +1,18 @@
+[/]
+tools.sessions.on = True
+tools.staticdir.root = os.path.abspath(os.getcwd())
+
+[credentials]
+client_id = "YOUR ID"
+client_secret = "YOUR SECRET"
+username = "YOUR USER"
+password = "YOUR PASS"
+
+[/static]
+tools.staticdir.on = True
+tools.staticdir.dir = "web"
+
+[/gaws]
+request.dispatch = cherrypy.dispatch.MethodDispatcher()
+tools.response_headers.on = True
+tools.response_headers.headers = [('Content-Type', 'text/plain')]

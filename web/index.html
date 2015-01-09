@@ -6,46 +6,21 @@
      <script type="text/javascript">
        $(document).ready(function() {
 
-         $("#generate-string").click(function(e) {
-           $.post("/generator", {"length": $("input[name='length']").val()})
+         $("#generate-temp").click(function(e) {
+           $.post("/gaws", {"cmd": "gettemp"})
             .done(function(string) {
-               $("#the-string").show();
-               $("#the-string input").val(string);
+               $("#the-temp").show();
+               $("#the-temp input").val(string);
             });
            e.preventDefault();
          });
-
-         $("#replace-string").click(function(e) {
-           $.ajax({
-              url: "/generator",
-              data: {"another_string": $("#the-string").val()}
-           })
-           .done(function() {
-              alert("Replaced!");
-           });
-           e.preventDefault();
-         });
-
-         $("#delete-string").click(function(e) {
-           $.ajax({
-              url: "/generator"
-           })
-           .done(function() {
-              $("#the-string").hide();
-           });
-           e.preventDefault();
-         });
-
        });
      </script>
    </head>
    <body>
-     <input type="text" value="8" name="length" />
-     <button id="generate-string">Give it now!</button>
-     <div id="the-string">
+     <button id="generate-temp">Give it now!</button>
+     <div id="the-temp">
          <input type="text" />
-         <button id="replace-string">Replace</button>
-         <button id="delete-string">Delete it</button>
      </div>
    </body>
 </html>
