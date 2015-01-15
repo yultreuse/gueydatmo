@@ -6,4 +6,25 @@ $(document).ready(function() {
 		});
 		e.preventDefault();
 	});
+	$("#getuser-btn").click(function(e) {
+		$.get("/getuser",function(data){
+			$("#getuser-raw").html(data);
+			$("#getuser-raw").show();
+		});
+		e.preventDefault();
+	});
+	$("#getmeasure-btn").click(function(e) {
+		$.get("/getmeasure",function(data){
+			$("#getmeasure-raw").html(data);
+			$("#getmeasure-raw").show();
+		});
+		e.preventDefault();
+	});
+	$("#getthermstate-btn").click(function(e) {
+		$.get("/getthermstate",function(data){
+			$("#getthermstate-raw").html(data);
+			$("#getthermstate-raw").show();
+		});
+		e.preventDefault();
+	});
 }); 

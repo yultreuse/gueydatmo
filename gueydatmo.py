@@ -3,6 +3,7 @@ import cherrypy
 from datetime import datetime,timedelta
 
 import os, os.path
+import json
 
 class token:
     '''Handles Netatmo API token'''    
@@ -40,7 +41,7 @@ class token:
         credentials["grant_type"] = "password"
 
         r = requests.post(token.NetatmoAuthUrl,data=credentials)
-        self.__tok = eval(r.text)
+        self.__tok = json.loads(r.text)
         duration = timedelta(seconds=int(self.__tok["expires_in"]))    
         deadline = now + duration
         self.__tok["deadline"] = deadline
@@ -54,7 +55,7 @@ class token:
         credentials["refresh_token"] = self.__tok["refresh_token"]
 
         r = requests.post(token.NetatmoAuthUrl,data=credentials)
-        self.__tok = eval(r.text)
+        self.__tok = json.loads(r.text)
         duration = timedelta(seconds=int(self.__tok["expires_in"]))    
         deadline = now + duration
         self.__tok["deadline"] = deadline
@@ -63,6 +64,15 @@ class GueydAtmo(object):
         
     def __init__(self):
         self.__tok = token()
+        
+    def netAtmoAPI(self,url,params):
+        params["access_token"] = self.__tok.getToken()
+        ans = requests.post("http://api.netatmo.net/api" + url,data=params)
+        dico = json.loads(ans.text)
+        if "status" in dico:
+            if "ok" == dico["status"] and "body" in dico:
+                return dico["body"]
+        return ans.text
     
     @cherrypy.expose
     def index(self):
@@ -71,20 +81,49 @@ class GueydAtmo(object):
     
     @cherrypy.expose
     def devicelist(self):
-        qryparams = {}
-        qryparams["access_token"] = self.__tok.getToken()
-        qryparams["app_type"] = "app_thermostat"
-        ans = requests.post("http://api.netatmo.net/api/devicelist",data=qryparams)
-        return ans.text 
+        if "device" in cherrypy.session:
+            print "device and module already in session"
+        else:
+            qryparams = {}
+            qryparams["app_type"] = "app_thermostat"
+            dico = self.netAtmoAPI("/devicelist", qryparams)
+            cherrypy.session["device"] = dico["devices"][0]
+            cherrypy.session["module"] = dico["modules"][0]
+        return "device : " + cherrypy.session["device"]["_id"] + "<br>module : " + cherrypy.session["module"]["_id"]
+
     
     @cherrypy.expose
-    def gaws(self,cmd):
-        if cmd == "gettemp":
+    def getuser(self):
+        if "user" in cherrypy.session:            
+            print "user already in session"
+        else:
             qryparams = {}
-            qryparams["access_token"] = self.__tok.getToken()
-            qryparams["app_type"] = "app_thermostat"
-            ans = requests.post("http://api.netatmo.net/api/devicelist",data=qryparams)
-            return ans.text           
+            cherrypy.session["user"]=self.netAtmoAPI("/getuser", qryparams)
+        print cherrypy.session["user"]
+        return cherrypy.session["user"]["mail"]
+    
+    @cherrypy.expose
+    def getmeasure(self):
+        qryparams = {}
+        if "device" not in cherrypy.session:
+            self.devicelist()
+        qryparams["device_id"] = cherrypy.session["device"]["_id"]
+        qryparams["module_id"] = cherrypy.session["module"]["_id"]
+        qryparams["scale"] = "1hour"
+        qryparams["type"] = "Temperature"
+        dico = self.netAtmoAPI("/getmeasure", qryparams)
+        return str(dico)
+    
+    @cherrypy.expose
+    def getthermstate(self):
+        qryparams = {}
+        if "device" not in cherrypy.session:
+            self.devicelist()
+        qryparams["device_id"] = cherrypy.session["device"]["_id"]
+        qryparams["module_id"] = cherrypy.session["module"]["_id"]
+        dico = self.netAtmoAPI("/getthermstate", qryparams)
+        return str(dico)
+     
 
 if __name__ == '__main__':
 
