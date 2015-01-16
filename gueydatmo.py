@@ -111,8 +111,19 @@ class GueydAtmo(object):
         qryparams["module_id"] = cherrypy.session["module"]["_id"]
         qryparams["scale"] = "1hour"
         qryparams["type"] = "Temperature"
-        dico = self.netAtmoAPI("/getmeasure", qryparams)
-        return str(dico)
+        dico = self.netAtmoAPI("/getmeasure", qryparams)[0]
+        d = {}
+        labels = []
+        values = []
+        t = dico["beg_time"]
+        for temp in dico["value"]:
+            labels.append(t)
+            t+=dico["step_time"]
+            values.append(temp[0])
+        d["labels"] = labels
+        d["data"] = values
+            
+        return str(d)
     
     @cherrypy.expose
     def getthermstate(self):
