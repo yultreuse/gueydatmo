@@ -1,23 +1,6 @@
 $(document).ready(function() {
-	
-	// Get context with jQuery - using jQuery's .get() method.
-	var ctx = $("#myChart").get(0).getContext("2d");
-	var data = {
-		labels : ["January", "February", "March", "April", "May", "June", "July"],
-		datasets : [{
-			label : "My First dataset",
-			fillColor : "rgba(220,220,220,0.2)",
-			strokeColor : "rgba(220,220,220,1)",
-			pointColor : "rgba(220,220,220,1)",
-			pointStrokeColor : "#fff",
-			pointHighlightFill : "#fff",
-			pointHighlightStroke : "rgba(220,220,220,1)",
-			data : [65, 59.6, 80, 81, 56, 55, 40]
-		}]
-	};
-	var options = {};
-	var myLineChart = new Chart(ctx).Line(data, options);
-	
+
+	// Buttons callbacks
 	$("#devicelist-btn").click(function(e) {
 		$.get("/devicelist", function(data) {
 			$("#devicelist-raw").html(data);
@@ -34,8 +17,19 @@ $(document).ready(function() {
 	});
 	$("#getmeasure-btn").click(function(e) {
 		$.get("/getmeasure", function(data) {
-			$("#getmeasure-raw").html(data);
-			$("#getmeasure-raw").show();
+			var line = JSON.parse(data);
+			var plot = $.jqplot('chart', [line], {
+				title : 'Température du jour',
+				axes : {
+					xaxis : {
+						renderer : $.jqplot.DateAxisRenderer,
+						tickOptions : {
+							formatString : '%H'
+						},
+						tickInterval : '1 hour'
+					}
+				}
+			});
 		});
 		e.preventDefault();
 	});

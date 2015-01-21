@@ -1,6 +1,7 @@
 import requests
 import cherrypy
 from datetime import datetime,timedelta
+import time,calendar
 
 import os, os.path
 import json
@@ -74,6 +75,12 @@ class GueydAtmo(object):
                 return dico["body"]
         return ans.text
     
+    def getUTCEpochTime(self,t=None):
+        #default t to beginning of current day
+        if t is None:
+            t=time.strptime(time.strftime("%Y-%m-%d",time.localtime()),"%Y-%m-%d")
+        return calendar.timegm(t)
+    
     @cherrypy.expose
     def index(self):
         token.cred = cherrypy.request.app.config['credentials']
@@ -107,23 +114,28 @@ class GueydAtmo(object):
         qryparams = {}
         if "device" not in cherrypy.session:
             self.devicelist()
+            
+        # Build query
         qryparams["device_id"] = cherrypy.session["device"]["_id"]
         qryparams["module_id"] = cherrypy.session["module"]["_id"]
-        qryparams["scale"] = "1hour"
+        qryparams["scale"] = "max"
+        qryparams["date_begin"] = str(self.getUTCEpochTime())
         qryparams["type"] = "Temperature"
-        dico = self.netAtmoAPI("/getmeasure", qryparams)[0]
-        d = {}
-        labels = []
-        values = []
-        t = dico["beg_time"]
-        for temp in dico["value"]:
-            labels.append(t)
-            t+=dico["step_time"]
-            values.append(temp[0])
-        d["labels"] = labels
-        d["data"] = values
-            
-        return str(d)
+        qryparams["optimize"] = "false"
+        dico = self.netAtmoAPI("/getmeasure", qryparams)
+        
+        # Parse output, sort by ascending order
+        listVal = dico.items()
+        listVal.sort()
+        
+        # Build data for plotting
+        outVal = []
+        for elem in listVal:
+            tstamp = int(elem[0])
+            tstring = time.strftime("%Y-%m-%d %I:%M%p",time.localtime(tstamp))
+            outVal.append([tstring,elem[1][0]])
+        
+        return json.dumps(outVal)
     
     @cherrypy.expose
     def getthermstate(self):

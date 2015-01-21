@@ -2,9 +2,10 @@
 <html>
 	<head>
 		<link href="/static/css/style.css" rel="stylesheet">
-		<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/jquery.jqplot.min.js"></script>
+		<script src="/static/js/plugins/jqplot.dateAxisRenderer.min.js"></script>
 		<script src="/static/js/gueydatmo.js"></script>
-		<script src="/static/js/Chart.min.js"></script>
 	</head>
 	<body>
 		<div id="devicelist-div">
@@ -27,10 +28,7 @@
 			<button id="getmeasure-btn">
 				Get measure
 			</button>
-			<p id="getmeasure-raw">
-				not yet done getmeasure
-			</p>
-			<canvas id="myChart" width="400" height="250"></canvas>
+			<div id="chart" style="height:400px; width:650px;"></div>
 		</div>
 		<div id="getthermstate-div">
 			<button id="getthermstate-btn">
