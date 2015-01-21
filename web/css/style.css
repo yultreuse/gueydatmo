@@ -1,3 +1,30 @@
 #devicelist-raw {
-  display: none;
+	display:none;
+}
+div {
+	display:block;
+}
+.jqplot-target {
+	color:#666;
+	font-family:"Trebuchet MS",Arial,Helvetica,sans-serif;
+}
+.jqplot-title {
+	font-size:1.2em;
+	padding-bottom:0.5em;
+}
+.jqplot-axis {
+	font-size:0.75em;
+}
+.jqplot-xaxis {
+	margin-top:10px;
+}
+.jqplot-yaxis {
+	margin-right:10px;
+}
+.jqplot-highlighter-tooltip {
+	border:1px solid #ccc;
+	font-size:.75em;
+	white-space:nowrap;
+	background:rgba(208,208,208,0.5);
+	padding:1px;
 }

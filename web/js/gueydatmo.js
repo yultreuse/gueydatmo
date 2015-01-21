@@ -7,13 +7,19 @@ $(document).ready(function() {
 			xaxis : {
 				renderer : $.jqplot.DateAxisRenderer,
 				tickOptions : {
-					formatString : '%H'
-				},
-				tickInterval : '1 hour'
+					formatString : '%R'
+				}
 			}
+		},
+		highlighter : {
+			show : true,
+			sizeAdjust : 7.5
+		},
+		cursor : {
+			show : false
 		}
 	};
-	var plot = $.jqplot('chart', [[20]],plotOpt);
+	var plot = $.jqplot('chart', [[20]], plotOpt);
 
 	// Buttons callbacks
 	$("#devicelist-btn").click(function(e) {
