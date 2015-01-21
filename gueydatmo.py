@@ -119,7 +119,7 @@ class GueydAtmo(object):
         qryparams["device_id"] = cherrypy.session["device"]["_id"]
         qryparams["module_id"] = cherrypy.session["module"]["_id"]
         qryparams["scale"] = "max"
-        qryparams["date_begin"] = str(self.getUTCEpochTime())
+        qryparams["date_begin"] = str(self.getUTCEpochTime()-3600)
         qryparams["type"] = "Temperature"
         qryparams["optimize"] = "false"
         dico = self.netAtmoAPI("/getmeasure", qryparams)

@@ -1,5 +1,20 @@
 $(document).ready(function() {
 
+	// Vars
+	var plotOpt = {
+		title : 'Température du jour',
+		axes : {
+			xaxis : {
+				renderer : $.jqplot.DateAxisRenderer,
+				tickOptions : {
+					formatString : '%H'
+				},
+				tickInterval : '1 hour'
+			}
+		}
+	};
+	var plot = $.jqplot('chart', [[20]],plotOpt);
+
 	// Buttons callbacks
 	$("#devicelist-btn").click(function(e) {
 		$.get("/devicelist", function(data) {
@@ -17,19 +32,10 @@ $(document).ready(function() {
 	});
 	$("#getmeasure-btn").click(function(e) {
 		$.get("/getmeasure", function(data) {
+			$("#chart").html("");
 			var line = JSON.parse(data);
-			var plot = $.jqplot('chart', [line], {
-				title : 'Température du jour',
-				axes : {
-					xaxis : {
-						renderer : $.jqplot.DateAxisRenderer,
-						tickOptions : {
-							formatString : '%H'
-						},
-						tickInterval : '1 hour'
-					}
-				}
-			});
+			plot.destroy();
+			plot = $.jqplot('chart', [line], plotOpt);
 		});
 		e.preventDefault();
 	});
