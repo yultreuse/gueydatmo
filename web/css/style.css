@@ -1,9 +1,29 @@
-#devicelist-raw {
-	display:none;
-}
+
 div {
 	display:block;
 }
+
+
+#debug {
+	margin-top: 20px;
+}
+
+#hdr {
+	background-color: black;
+}
+
+#logo-pic {
+	height: 60px;
+}
+#logo-container {
+	width: 100px;
+}
+.center {
+	margin-right: auto;
+	margin-left: auto;
+}
+
+/* jqplot style */
 .jqplot-target {
 	color:#666;
 	font-family:"Trebuchet MS",Arial,Helvetica,sans-serif;
