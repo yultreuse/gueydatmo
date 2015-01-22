@@ -10,6 +10,14 @@ div {
 
 #hdr {
 	background-color: black;
+	height:60px
+}
+
+.hdr-elem {
+	float:left;
+	height:60px;
+	line-height:60px;
+	vertical-align: middle;
 }
 
 .container {
@@ -18,12 +26,21 @@ div {
 }
 
 #logo-pic {
-	height: 60px;
+	width: 60px;
 }
 #logo-container {
 	width: 100px;
+	font-size:0;
 }
 
+#filler {
+	width:900px;
+}
+#user-container {
+	color: white;
+	width:200px;
+	text-align:right;
+}
 
 
 /* jqplot style */

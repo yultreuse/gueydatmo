@@ -37,7 +37,10 @@ $(document).ready(function() {
 	}
 	
 	$("#getuser-btn").click(function(e) {
-		$.get("/getuser", debugCallback);
+		$.get("/getuser", function(data) {
+			debugCallback(data);
+			$("#user-container").html(data);
+		});
 	});
 	
 	$("#devicelist-btn").click(function(e) {
